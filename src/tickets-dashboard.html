@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
+<head>
+    <title>Redmine Charts</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <meta name="generator" content="Geany 1.25"/>
+
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        // Load the Visualization API and the piechart package.
+        google.load('visualization', '1', {'packages': ['corechart']});
+
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var jsonData = $.ajax('http://m.slcty.co:8080/redmine/projects/zendesk/issues.json',
+                    {
+                        headers: {
+                            'X-Redmine-API-Key': '80b8a3afbede8958550b7a110954bfc3abb1e9dc',
+                            'Content-Type': 'application/json'
+                        },
+                        processData: false,
+                        dataType: 'json',
+                        //data: JSON.stringify({issue:{status_id: newStatusId}}),
+                        type: 'PUT'
+                    }).responseText;
+            /* ({
+             url: "http://m.slcty.co:8080/redmine/projects/zendesk/issues.json",
+             dataType: "json",
+             {headers: {
+             'X-Redmine-API-Key': 80b8a3afbede8958550b7a110954bfc3abb1e9dc,
+             'Content-Type': 'application/json'
+             }},
+             async: false
+             }).responseText; */
+
+            // Create our data table out of JSON data loaded from server.
+            var data = new google.visualization.DataTable(jsonData);
+
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+            chart.draw(data, {width: 400, height: 240});
+        }
+
+    </script>
+</head>
+
+<body>
+<!--Div that will hold the pie chart-->
+<div id="chart_div"></div>
 </body>
 </html>
+<!-- curl -v -H "Content-Type: application/json" -X PUT --data "@zendesk.json" -H "X-Redmine-API-Key: 80b8a3afbede8958550b7a110954bfc3abb1e9dc" http://m.slcty.co:8080/redmine/projects/zendesk/issues.json -->
+<!-- jQuery.ajax(redmineRoot + 'issues/' + issueId + '.json', {
+        headers: {
+            'X-Redmine-API-Key': API_KEY,
+            'Content-Type': 'application/json'
+        },
+        processData: false,
+        dataType: 'json',
+        data: JSON.stringify({issue:{status_id: newStatusId}}),
+        type: 'PUT'
+    }); -->
